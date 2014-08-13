@@ -1,119 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script>
-
-function setCookie(cname,cvalue,exdays) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    var expires = "expires=" + d.toGMTString();
-    document.cookie = cname+"="+cvalue+"; "+expires;
-}
-
-function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1);
-        if (c.indexOf(name) != -1) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}
-
-function checkCookie() {
-    var user=getCookie("csspool_username");
-    if (user != "") {
-        window.location = "showcss";
-    }
-}
-function buttonClick(sign){
-    $('#button').addClass("hide");
-    $('#'+sign).removeClass("hide");
-}
-function validEmail(v) {
-    var r = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
-    return (v.match(r) == null) ? false : true;
-}
-function checkAndSubmit() {
-    $("#error_msg").addClass("hide");
-    var email = $('input[name="signup_email"]').val();    
-    if (!validEmail(email)){
-        setErrorMsg("Email format is not valid!");
-        return;
-    }
-    var pwd1 = $('input[name="signup_password"]').val(); 
-    var pwd2 = $('input[name="signup_password_again"]').val(); 
-    if (pwd1.length<4){
-        setErrorMsg("Password is too short!");
-        return;   
-    }
-    if (pwd1 != pwd2){
-        $('input[name="signup_password"]').val("");
-        $('input[name="signup_password_again"]').val("");
-        setErrorMsg("Two password is not equal!");
-        return;
-    }
-    $("#signup_form").submit();
-}
-function setErrorMsg(errorMsg){
-    $("#error_msg").text(errorMsg);
-    $("#error_msg").removeClass("hide");
-    
-}
-function signinAndSubmit(){
-    $("#error_msg").addClass("hide");
-    var email = $('input[name="signin_email"]').val();    
-    if (!validEmail(email)){
-        setErrorMsg("Email format is not valid!");
-        return;
-    }
-    var pwd = $('input[name="signin_password"]').val(); 
-    if (pwd.length<4){
-        $('input[name="signin_password"]').val("");
-        setErrorMsg("Password is too short!");
-        return;   
-    }
-    $("#signin_form").submit();
-}
-</script>
+    <title>Index of CssPool</title>
+    {% load staticfiles %}
+    <link href="{% static "csspool/css/index.css" %}" rel="stylesheet">
+    <link href="{% static "dist/css/bootstrap.min.css" %}" rel="stylesheet">
 <style>
-.hide {display: none;}
 #error_msg {color: red;}
 </style>
 </head>
 <body onload="checkCookie()">
-    {{ current_date }}<br><br>
-    Hello, You're at the css poll index.<br><br>
-    {% load staticfiles %}
-    <img src="{% static "csspool/img/icon.jpg" %}" alt="My image"/>
-    <div id="button">
-        <div class="bn"><a href="#signin" onclick="buttonClick('signin')">Sign in</a></div>
-        <div class="bn"><a href="#signup" onclick="buttonClick('signup')">Sign up</a></div>
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">CssPool</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="http://ywang135.co">Contact</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right" id="click-bar">
+            <li><a href="#signin" onclick="buttonClick('signin', 'signup')">Sign in</a></li>
+            <li><a href="#signup" onclick="buttonClick('signup', 'signin')">Sign up</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
     </div>
+    <div class="container">
+        <div class="jumbotron">
+        <h1>CssPool <small><small>{{ current_date }}</small></small></h1>
+        <p>You're at the css poll index page.</p>
+        <p>CssPool is an application that help coder remember their code.</p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="https://github.com/ywang135/CssPool" role="button">View gitHub repository &raquo;</a>
+        </p>
+        </div>
     <div id="error_msg">{{error_msg}}</div>
     <div id="signup" class="hide">
-        Sign Up:<br><br>
-        <form id="signup_form" action="signup" method="post">
-        {% csrf_token %}
-        Email: <input type="text" size="40" name="signup_email"/><br>
-        Password: <input type="password" size="20" name="signup_password" /><br>
-        Password (again): <input type="password" size="20" name="signup_password_again" /><br>
-        <input type="button" value="Submit" onclick="checkAndSubmit();"/><br>  
-        </form>
+        <div class="row centered-form">
+        <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
+        	<div class="panel panel-default">
+        		<div class="panel-heading">
+			    		<h3 class="panel-title">Sign up for CssPool <small>It's free!</small></h3>
+			 			</div>
+			 			<div class="panel-body">
+			    		<form role="form" action="signup" method="post">
+			    			<div class="form-group">
+			    				<input type="email" name="signup_email" id="signup_email" class="form-control input-sm" placeholder="Email Address">
+			    			</div>
+
+			    			<div class="row">
+			    				<div class="col-xs-6 col-sm-6 col-md-6">
+			    					<div class="form-group">
+			    						<input type="password" name="signup_password" id="password" class="form-control input-sm" placeholder="Password">
+			    					</div>
+			    				</div>
+			    				<div class="col-xs-6 col-sm-6 col-md-6">
+			    					<div class="form-group">
+			    						<input type="password" name="signup_password_confirmation" id="password_confirmation" class="form-control input-sm" placeholder="Confirm Password">
+			    					</div>
+			    				</div>
+			    			</div>			    			
+			    			<input type="submit" value="Sign up" class="btn btn-info btn-block">			    		
+			    		</form>
+			    	</div>
+	    		</div>
+    		</div>
+    	</div>
     </div>
     <div id="signin" class="hide">
-        Sign In:<br>
-        <form id="signin_form" action="signin" method="post">
-        {% csrf_token %}
-        Email: <input type="text" size="40" name="signin_email"/><br>
-        Password: <input type="password" size="20" name="signin_password" /><br>
-        <input type="button" value="Submit" onclick="signinAndSubmit();"/><br>
-        </form>
-    </div>
+        <div class="row centered-form">
+        <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
+        	<div class="panel panel-default">
+        		<div class="panel-heading">
+			    		<h3 class="panel-title">Sign in for CssPool</h3>
+			 			</div>
+			 			<div class="panel-body">
+			    		<form role="form" action="signin" method="post">
+			    			<div class="form-group">
+			    				<input type="email" name="signin_email" id="signin_email" class="form-control input-sm" placeholder="Email Address">
+			    			</div>
+
+			    			<div class="row">
+			    				<div class="col-xs-6 col-sm-6 col-md-6">
+			    					<div class="form-group">
+			    						<input type="password" name="signin_password" id="signin_password" class="form-control input-sm" placeholder="Password">
+			    					</div>
+			    				</div>
+			    			</div>			    			
+			    			<input type="submit" value="Sign in" class="btn btn-info btn-block">			    		
+			    		</form>
+			    	</div>
+	    		</div>
+    		</div>
+    	</div>
+    </div>     
+        <div class="mastfoot">
+            <div class="inner">
+              <p>GitHub of <a href="https://github.com/ywang135/CssPool">CssPool</a>, by <a href="https://ywang135.co">@Yi</a>.</p>
+            </div>
+        </div>
+    </div> <!-- /container -->
+    <script src="{% static "csspool/js/jquery.js" %}" alt="My image"></script>
+    <script src="{% static "csspool/js/index.js" %}" alt="My image"></script>
 </body>
 </html>
 
