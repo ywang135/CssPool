@@ -1,6 +1,5 @@
 from django.db import models
 from fragments import CssType
-import json
 
 class User(models.Model):
     email = models.CharField(max_length = 40, primary_key=True)

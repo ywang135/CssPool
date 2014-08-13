@@ -1,3 +1,5 @@
 from django.contrib import admin
+from csspool.models import CssPool, User
 
-# Register your models here.
+admin.site.register(CssPool)
+admin.site.register(User)
