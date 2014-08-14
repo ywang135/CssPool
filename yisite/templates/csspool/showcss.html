@@ -11,15 +11,15 @@
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/csspool/showcss">{{email_address}}</a>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/csspool/showcss">{{email_address}}</a>
         </div>
-        <div class="navbar-collapse collapse">
+        <div class="navbar-collapse collapse in">
           <ul class="nav navbar-nav">
                 <li><a href="#profiles-null">Personal Profiles</a></li>
                 <li><a href="http://ywang135.co">Contact</a></li>
@@ -126,14 +126,23 @@
             </div>
             <div class="row">
                 <div id="css_code" class="col-md-6"></div>
-                <div id="chose_test" class="col-md-6"></div>
+                <div id="chose_testcode" class="col-md-6"></div>
+            </div>
+            <div class="row">
+                <label class="col-md-6 control-label" for="chose_css_name">Css Name: </label>
+                <label class="col-md-6 control-label" for="chose_css_type">Type: </label>
             </div>
             <div class="row">
                 <div id="chose_css_name" class="col-md-6"></div>
                 <div id="chose_css_type" class="col-md-6"></div>
-            </div>      
+            </div>    
             <div class="row">
-                <div id="chose_css_description" class="col-md-12"></div>
+                <label class="col-md-6 control-label" for="chose_css_description">Description: </label>
+                <label class="col-md-6 control-label" for="chose_css_useBootstrap">Use Bootstrap? </label>
+            </div>
+            <div class="row">
+                <div id="chose_css_description" class="col-md-6"></div>
+                <div id="chose_css_useBootstrap" class="col-md-6"></div>
             </div>   
             <div class="row">
                 <div id="chose_css_code" class="col-md-6"></div>
@@ -147,8 +156,9 @@
             </div>
         </div>
     </div><!-- /.container -->
-    
-    <script src="{% static "csspool/js/jquery.js" %}"></script>
+ 
+    <script src="{% static "csspool/js/jquery.js" %}"></script> 
     <script src="{% static "csspool/js/showcss.js" %}"></script>
+    <script src="{% static "dist/js/bootstrap.min.js" %}"></script>
 </body>
 </html>

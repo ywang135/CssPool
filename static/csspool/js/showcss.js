@@ -15,7 +15,6 @@ function checkCookie() {
     if (user == "") {
         window.location = "";
     }
-    chooseCSS();
 }
 function validEmail(v) {
     var r = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
@@ -28,7 +27,7 @@ function buttonClick(show, hide) {
     $('#'+hide).addClass("hide");
     $('html, body').animate({ scrollTop: 0 }, 'slow');
 }
-function convertSourseCode(codestrr) {
+function convertSourseCodeToHtml(codestrr) {
    // str = str.replace(/\b(the|over|and|into)\b/g, "_")
     codestrr = codestrr.replace(/(<)/g, "&lt;"); 
     codestrr = codestrr.replace(/(>)/g, "&gt;"); 
@@ -36,39 +35,6 @@ function convertSourseCode(codestrr) {
     codestrr = codestrr.replace(/(\t)/g, "&nbsp;&nbsp;&nbsp;&nbsp;");
     codestrr = codestrr.replace(/ /g, "&nbsp;");
     return codestrr;
-}
-function testCss(){
-    $("#error_msg").addClass("hide");
-    var csstype = $('#css_type').val(); 
-    var cssname = $('input[name="addcss_name"]').val().trim();
-    if (cssname == ""){
-        $("#error_msg").removeClass("hide");
-        setErrorMsg("css name should not be empty.");
-        return;
-    }
-    var csscontent = $('textarea#css_content').val();
-    var cssStr = convertSourseCode(csscontent);
-    //alert(cssStr);
-    if( !$('#useBootstrap').is(':checked') && csscontent.trim() == ""){
-        $("#error_msg").removeClass("hide");
-        setErrorMsg("css content should not be empty or you can choose Bootstrap.");
-        return;
-    }
-    var testcontent = $('textarea#css_testcode').val(); 
-    if (testcontent.trim() == ""){
-        $("#error_msg").removeClass("hide");
-        setErrorMsg("test code should not be empty.");
-        return;
-    }
-    $('#showCss').fadeIn();
-    var csscode = "<pre>" + cssname + ":\n" + cssStr + "</pre>";
-    $("#css_code").html(csscode);
-    //$("style").append(csscontent);
-    var testcode="<style>"+csscontent+"</style>";
-    testcode += testcontent;
-    $("#test_area").html(testcode);
-    var testCodeStr = convertSourseCode(testcontent);
-    $("#chose_test").html("<pre>" + testCodeStr + "</pre>");
 }
 function setErrorMsg(errorMsg){
     $("#error_msg").fadeIn(); 
@@ -90,13 +56,77 @@ function checkAndSubmit() {
         return;   
     }
     var csscontent = $('textarea#css_content').val();
-    var cssContentStr = convertSourseCode(csscontent);
+    var cssContentStr = convertSourseCodeToHtml(csscontent);
     var csstestcode = $('textarea#css_testcode').val();
-    var cssTestCodeStr = convertSourseCode(csstestcode);
+    var cssTestCodeStr = convertSourseCodeToHtml(csstestcode);
     $('input[name="css_content"]').val(cssContentStr);  
     $('input[name="addcss_testcode"]').val(cssTestCodeStr); 
-    alert("submit form");
+    //alert("submit form");
     $("#addCssForm").submit();
+}
+function testCss(){
+    $("#error_msg").hide();
+    var csstype = $('#css_type').val(); 
+    var cssname = $('input[name="addcss_name"]').val().trim();
+    if (cssname == ""){
+        setErrorMsg("css name should not be empty.");
+        return;
+    }
+    var csscontent = $('textarea#css_content').val();
+    var cssStr = convertSourseCodeToHtml(csscontent);
+    //alert(cssStr);
+    if( !$('#useBootstrap').is(':checked') && csscontent.trim() == ""){
+        setErrorMsg("css content should not be empty or you can choose Bootstrap.");
+        return;
+    }
+    var testcontent = $('textarea#css_testcode').val(); 
+    if (testcontent.trim() == ""){
+        setErrorMsg("test code should not be empty.");
+        return;
+    }
+    var testCodeStr = convertSourseCodeToHtml(testcontent);
+    var description = $('input[name="addcss_description"]').val();
+    data = {}
+    data["name"] = cssname;
+    data["type"] = csstype;
+    data["description"] = description;
+    data["content"] = cssStr;
+    data["testCode"] = testCodeStr;
+    if($('#useBootstrap').is(':checked')){
+        data["useBootstrap"] = "Yes";
+    }
+    else{
+        data["useBootstrap"] = "No";   
+    }
+    showTest(data);
+}
+function showTest(data){
+    $('#showCss').fadeIn();
+    $("#chose_css_name").html("<pre>"+data["name"]+"</pre>");
+    $("#chose_css_type").html("<pre>"+data["type"]+"</pre>");
+    $("#chose_css_description").html("<pre>"+data["description"]+"</pre>");   
+    $("#chose_css_useBootstrap").html("<pre>"+data["useBootstrap"]+"</pre>");
+    var content = data["content"];
+    $("#css_code").html("<pre>"+content+"</pre>");   
+    var testCode = data["testCode"];
+    $("#chose_testcode").html("<pre>" + testCode + "</pre>");  
+    var test = createTest(content, testCode, data["useBootstrap"]=="Yes");
+    $("#test_area").html(test);
+}
+function createTest(cssCode, testCode, useBootstrap){
+    var css = convertHtmlToSourceCode(cssCode);
+    var code = convertHtmlToSourceCode(testCode);
+    var mainCode = "<style>"+css+"</style>"+code;
+    var suffixUrl = encodeURIComponent(mainCode);
+    var bootstrap = useBootstrap?1:0
+    return "<iframe id=\"test_iframe\" class=\"col-md-10\" src=\"/csspool/frame/"+bootstrap+"?code="+suffixUrl+"\"><noframes><body>"+mainCode+"</body></noframes></iframe>"; 
+}
+function convertHtmlToSourceCode(htmlcode){
+    var codestrr = htmlcode.replace(/&nbsp;/g, " ");
+    codestrr = codestrr.replace(/&lt;/g, "<"); 
+    codestrr = codestrr.replace(/&gt;/g, ">"); 
+    codestrr = codestrr.replace(/<br>/g, "");
+    return codestrr;
 }
 function chooseCSS(){
     var id = $("#choose_css_type").val();   
@@ -113,18 +143,7 @@ function chooseCSS(){
             var content = request.responseText;
             var data = JSON.parse(content);  
             if (data != null){
-                var name = data["name"];
-                $("#chose_css_name").html("Name: <pre>"+name+"</pre>");
-                var type = data["type"];
-                $("#chose_css_type").html("Type: <pre>"+type+"</pre>");
-                var description = data["description"];
-                $("#chose_css_description").html("Description: <textarea disabled=\"true\" style=\"display:inline-block;vertical-align:middle;background-color:white;\">"+description+"</textarea>");               
-                $("#chose_css_testcode").html("Test Code: <textarea disabled=\"true\" rows=\"10\" cols=\"30\" style=\"display:inline-block;vertical-align:middle;background-color:white;\">"+data["testCode"]+"</textarea>")
-                var content = data["content"];
-                $("#chose_css_code").html("css Code: "+content);             
-                var testContent = "Test: <style>"+content+"</style>";
-                testContent += data["testCode"]
-                $("#chose_test").html(testContent);  
+                showTest(data);
             }
             else{
                 alert("no returns!");
@@ -133,7 +152,7 @@ function chooseCSS(){
             alert("Connection failed!");							
         }
     }, false); 
-//    alert("chooose: ajaxaccesscss/"+id);
+    //alert("chooose: ajaxaccesscss/"+id);
 }
 $(document).ready(function() {
     $('#showCss').hide();
@@ -144,7 +163,7 @@ $(document).ready(function() {
         $(this).addClass("active");
     });
     $('#choose_css_type').change(function(){
-        //chooseCSS();
+        chooseCSS();
     });
-    
+    chooseCSS(); 
 });

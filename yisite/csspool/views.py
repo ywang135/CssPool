@@ -155,3 +155,36 @@ def success(request):
         'current_date': curtime,
     })
     return HttpResponse(template.render(context))
+
+def ajaxaccesscss(request, id):
+    try:
+        cp = CssPool.objects.filter(pk=id)
+        dic = {}
+        dic["user"] = cp[0].user.email
+        dic["name"] = cp[0].name
+        if cp[0].cssType == 1:
+            dic["type"] = "id"
+        else:
+            dic["type"] = "class"
+        dic["description"] = cp[0].description
+        dic["content"] = cp[0].content
+        dic["testCode"] = cp[0].testCode
+        if cp[0].useBootstrap:
+            dic["useBootstrap"] = "Yes"
+        else:
+            dic["useBootstrap"] = "No"
+        return HttpResponse(json.dumps(dic), content_type="application/json")
+    except CssPool.DoesNotExist:
+        return None
+def frame(request, bootstrap):
+    if request.method == 'GET':
+        code = request.GET['code']
+        if int(bootstrap) == 1:
+            template = loader.get_template('csspool/iframe.html')
+            context = RequestContext(request, {
+                'code': code,
+            })
+            return HttpResponse(template.render(context))
+        elif int(bootstrap) == 0:
+            return HttpResponse(code)       
+    return HttpResponse("Test Error")

@@ -11,5 +11,6 @@ urlpatterns = patterns('',
     url(r'addcss$', views.addcss, name='addcss'),
     url(r'logout$', views.logout, name='logout'),
     url(r'success$', views.success, name='success'),
-#    url(r'ajaxaccesscss/(\d{1,7})$', views.ajaxaccesscss, name='ajaxaccesscss')
+    url(r'ajaxaccesscss/(\d{1,9})$', views.ajaxaccesscss, name='ajaxaccesscss'),
+    url(r'frame/(?P<bootstrap>[0-9])$', views.frame, name='frame')
 )
