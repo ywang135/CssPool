@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Css Pool</title>
+    {% load staticfiles %}
+    <link href="{% static "dist/css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "csspool/css/showcss.css" %}" rel="stylesheet">
+</head>
+<body onload="checkCookie()"> 
+    
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/csspool/showcss">{{email_address}}</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+                <li><a href="#profiles-null">Personal Profiles</a></li>
+                <li><a href="http://ywang135.co">Contact</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right" id="click-bar">
+            <li><a href="#addcss" onclick="buttonClick('addCss', 'chooseCss')">Add CSS</a></li>
+            <li class="active"><a href="#chooseCss" onclick="buttonClick('chooseCss', 'addCss')">Show CSS</a></li>
+            <li><a href="/csspool/logout">Logout</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container"><br>
+            {{ current_date }}: &nbsp; 
+        <div id="addCss" class="hide">
+            <form id="addCssForm" action="addcss" method="post" class="form-horizontal">
+                <h3> Add Css</h3>
+                {% csrf_token %}
+                <input type="hidden" size="40" name="addcss_email" />
+                <input type="hidden" size="800" name="css_content" />
+                <input type="hidden" size="800" name="addcss_testcode" />
+                <div class="row">
+                    <label class="col-md-2 control-label" for="css_type">Css Type</label>
+                    <div class="col-md-4">
+                        <select name="css_type" id="css_type" class="form-control">
+                            <option value="1">id</option>
+                            <option value="2">class</option>
+                        </select>
+                    </div>
+                    <label class="col-md-2 control-label">
+                        <input type="checkbox" name="useBootstrap" id="useBootstrap"> Use Bootstrap
+                    </label>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-2 control-label" for="addcss_name">Css name</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="css name input" size="40" name="addcss_name" id="addcss_name"/>
+                    </div>
+                    <label class="col-md-2 control-label" for="addcss_description">Css description</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="css description input" size="40" name="addcss_description" id="addcss_description"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-2 control-label" for="css_content">Css content</label>
+                    <div class="col-md-4">
+                        <textarea id="css_content" placeholder="css code content input" class="form-control" rows="14" cols="30"></textarea>
+                    </div>
+                    <label class="col-md-2 control-label" for="css_testcode">Test Code</label>
+                    <div class="col-md-4">
+                        <textarea id="css_testcode" placeholder="test code content input" class="form-control" rows="14" cols="30"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-2 control-label" for="addcss_password">Password</label>
+                    <div class="col-md-4">
+                        <input type="password" class="form-control" placeholder="password input" size="20" name="addcss_password" id="addcss_password" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="error_msg" class="{{hide}} alert alert-danger" role="alert">{{error_msg}}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="button" value="Submit"  class="btn btn-success" onclick="checkAndSubmit();"/>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="button" value="Test" class="btn btn-primary" onclick="testCss();"/><br>   
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="chooseCss">
+            <h3> Choose and Show Css</h3>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <label class="col-md-2 control-label" for="choose_css_type">Css Name</label>
+                <div class="col-md-4">
+                    <select name="choose_css_type" id="choose_css_type" class="form-control">      
+                    {% for css in cssPool %}       
+                        <option value="{{css.pk}}">{{css}}</option> 
+                    {% endfor %}
+                </select>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </div>
+        <div id="showCss">
+            <div class="row">
+                <label class="col-md-2 control-label" for="test_area">Css Test</label>
+                <div id="test_area" class="col-md-10"></div>
+            </div>
+            <div class="row">
+                <label class="col-md-6 control-label" for="css_code">Css Code: </label>
+                <label class="col-md-6 control-label" for="chose_test">Test Code: </label>
+            </div>
+            <div class="row">
+                <div id="css_code" class="col-md-6"></div>
+                <div id="chose_test" class="col-md-6"></div>
+            </div>
+            <div class="row">
+                <div id="chose_css_name" class="col-md-6"></div>
+                <div id="chose_css_type" class="col-md-6"></div>
+            </div>      
+            <div class="row">
+                <div id="chose_css_description" class="col-md-12"></div>
+            </div>   
+            <div class="row">
+                <div id="chose_css_code" class="col-md-6"></div>
+                <div id="chose_css_testcode" class="col-md-6"></div>
+            </div>  
+        </div>
+
+        <div class="mastfoot">
+            <div class="inner">
+              <p>GitHub of <a href="https://github.com/ywang135/CssPool">CssPool</a>, by <a href="https://ywang135.co">@Yi Wang</a>.</p>
+            </div>
+        </div>
+    </div><!-- /.container -->
+    
+    <script src="{% static "csspool/js/jquery.js" %}"></script>
+    <script src="{% static "csspool/js/showcss.js" %}"></script>
+</body>
+</html>

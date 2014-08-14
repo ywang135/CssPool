@@ -14,3 +14,12 @@ body {
 	background: rgba(255, 255, 255, 0.8);
 	box-shadow: rgba(0, 0, 0, 0.3) 20px 20px 20px;
 }
+.mastfoot {
+    text-align: center;
+    z-index:100;
+    position:fixed;
+    bottom:0px;
+    border-top-style: solid;
+    border-top-width: 1pt;
+    padding-top: 4px;
+}

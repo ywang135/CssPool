@@ -1,0 +1,16 @@
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+.mastfoot {
+    text-align: center;
+    z-index:100;
+    position:fixed;
+    bottom:0px;
+    border-top-style: solid;
+    border-top-width: 1pt;
+    padding-top: 4px;
+}

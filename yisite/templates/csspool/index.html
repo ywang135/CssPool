@@ -42,7 +42,7 @@
           <a class="btn btn-lg btn-primary" href="https://github.com/ywang135/CssPool" role="button">View gitHub repository &raquo;</a>
         </p>
         </div>
-    <div id="error_msg">{{error_msg}}</div>
+    <div id="error_msg" class="{{ hide }} alert alert-danger" role="alert">{{error_msg}}</div>
     <div id="signup" class="hide">
         <div class="row centered-form">
         <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
@@ -51,9 +51,10 @@
 			    		<h3 class="panel-title">Sign up for CssPool <small>It's free!</small></h3>
 			 			</div>
 			 			<div class="panel-body">
-			    		<form role="form" action="signup" method="post">
+			    		<form id="signup_form" role="form" action="/csspool/signup" method="post">
+                            {% csrf_token %}
 			    			<div class="form-group">
-			    				<input type="email" name="signup_email" id="signup_email" class="form-control input-sm" placeholder="Email Address">
+			    				<input type="email" name="signup_email" id="email" class="form-control input-sm" placeholder="Email Address">
 			    			</div>
 
 			    			<div class="row">
@@ -67,7 +68,8 @@
 			    						<input type="password" name="signup_password_confirmation" id="password_confirmation" class="form-control input-sm" placeholder="Confirm Password">
 			    					</div>
 			    				</div>
-			    			</div>			    			
+			    			</div>	
+                            <div id="signup_error_msg" class="hide alert alert-warning"></div>
 			    			<input type="submit" value="Sign up" class="btn btn-info btn-block">			    		
 			    		</form>
 			    	</div>
@@ -83,7 +85,8 @@
 			    		<h3 class="panel-title">Sign in for CssPool</h3>
 			 			</div>
 			 			<div class="panel-body">
-			    		<form role="form" action="signin" method="post">
+			    		<form id="signin_form" role="form" action="signin" method="post">
+                            {% csrf_token %}
 			    			<div class="form-group">
 			    				<input type="email" name="signin_email" id="signin_email" class="form-control input-sm" placeholder="Email Address">
 			    			</div>
@@ -94,7 +97,8 @@
 			    						<input type="password" name="signin_password" id="signin_password" class="form-control input-sm" placeholder="Password">
 			    					</div>
 			    				</div>
-			    			</div>			    			
+			    			</div>
+                            <div id="signin_error_msg" class="hide alert alert-warning"></div>
 			    			<input type="submit" value="Sign in" class="btn btn-info btn-block">			    		
 			    		</form>
 			    	</div>
@@ -104,12 +108,12 @@
     </div>     
         <div class="mastfoot">
             <div class="inner">
-              <p>GitHub of <a href="https://github.com/ywang135/CssPool">CssPool</a>, by <a href="https://ywang135.co">@Yi</a>.</p>
+              <p>GitHub of <a href="https://github.com/ywang135/CssPool">CssPool</a>, by <a href="https://ywang135.co">@Yi Wang</a>.</p>
             </div>
         </div>
     </div> <!-- /container -->
-    <script src="{% static "csspool/js/jquery.js" %}" alt="My image"></script>
-    <script src="{% static "csspool/js/index.js" %}" alt="My image"></script>
+    <script src="{% static "csspool/js/jquery.js" %}"></script>
+    <script src="{% static "csspool/js/index.js" %}"></script>
 </body>
 </html>
 

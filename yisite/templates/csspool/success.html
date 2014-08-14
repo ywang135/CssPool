@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Success</title>
+    {% load staticfiles %}
+    <link href="{% static "dist/css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "csspool/css/success.css" %}" rel="stylesheet">
+<script>
+var nIntervId;
+function counter() {
+    nIntervId = setInterval(count, 1000);
+}
+function count() {
+    var second = parseInt($("#second").text());
+    if (second > 0){
+        second --;
+        $("#second").text(second);
+    }
+    else{
+        clearInterval(nIntervId);
+        window.location = "/csspool/showcss";   
+    }
+}
+window.addEventListener('load', function(){
+        counter();
+    }, false);
+</script>
+</head>
+<body>
+
+    <div class="container">
+
+      <div class="starter-template">
+        <h1>Successed!</h1>
+        <p class="lead">{{ current_date }} </p>
+            Redirect in <big><div id="second" style="display:inline">4</div></big> second.<br>
+            If not jump, click <a href="/csspool/showcss">here</a>.</p>
+      </div>
+        <div class="mastfoot">
+            <div class="inner">
+              <p>GitHub of <a href="https://github.com/ywang135/CssPool">CssPool</a>, by <a href="https://ywang135.co">@Yi Wang</a>.</p>
+            </div>
+        </div>
+    </div><!-- /.container -->
+    <script src="{% static "csspool/js/jquery.js" %}"></script>
+</body>
+</html>
+
+
+    
