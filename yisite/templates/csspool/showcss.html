@@ -25,6 +25,7 @@
                 <li><a href="http://ywang135.co">Contact</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right" id="click-bar">
+            <li><a href="/csspool/manage" >Manage CSS</a></li>
             <li><a href="#addcss" onclick="buttonClick('addCss', 'chooseCss')">Add CSS</a></li>
             <li class="active"><a href="#chooseCss" onclick="buttonClick('chooseCss', 'addCss')">Show CSS</a></li>
             <li><a href="/csspool/logout">Logout</a></li>
@@ -38,7 +39,7 @@
             <form id="addCssForm" action="addcss" method="post" class="form-horizontal">
                 <h3> Add Css</h3>
                 {% csrf_token %}
-                <input type="hidden" size="40" name="addcss_email" />
+                <input type="hidden" size="40" name="addcss_email"/>
                 <input type="hidden" size="800" name="css_content" />
                 <input type="hidden" size="800" name="addcss_testcode" />
                 <div class="row">
@@ -95,7 +96,7 @@
                         <input type="button" value="Submit"  class="btn btn-success" onclick="checkAndSubmit();"/>
                     </div>
                     <div class="col-md-4">
-                        <input type="button" value="Test" class="btn btn-primary" onclick="testCss();"/><br>   
+                        <input type="button" value="Test" class="btn btn-primary" onclick="testCss();"/> 
                     </div>
                 </div>
             </form>
@@ -160,5 +161,6 @@
     <script src="{% static "csspool/js/jquery.js" %}"></script> 
     <script src="{% static "csspool/js/showcss.js" %}"></script>
     <script src="{% static "dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "dist/js/bootbox.min.js" %}"></script>
 </body>
 </html>

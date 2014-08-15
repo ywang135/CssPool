@@ -21,7 +21,7 @@ def index(request):
 def redirect_index(request, error_id):
     template = loader.get_template('csspool/index.html')
     curtime = time.strftime("%x, %a")
-    error_id = int(error_id)%4
+    error_id = int(error_id) % 6
     if error_id == 0:
         errorMsg = "Signup Failed. Please try again!"
     elif error_id == 1:
@@ -32,6 +32,8 @@ def redirect_index(request, error_id):
         errorMsg = "Signin Failed. Check your email and password Please try again!"    
     elif error_id == 4:
         errorMsg = "Process Failed. Check your email and password Please try again!"
+    elif error_id == 5:
+        errorMsg = "Please Sign in or Sign up!"
     else:
         errorMsg = "Undefined Error. Please try again!"
     context = RequestContext(request, {
@@ -41,7 +43,7 @@ def redirect_index(request, error_id):
     return HttpResponse(template.render(context))
 
 def getErrorCode(error_id):
-    countError = 4
+    countError = 6
     error = str(random.randint(1000000, 99999999)/countError*countError+error_id)
     return error
 def signup(request):
@@ -60,6 +62,7 @@ def signup(request):
             user.save()
         response = HttpResponseRedirect('showcss')
         set_cookie(response, 'csspool_username', new_email)
+        set_cookie(response, 'password', pwd) 
         return response
     error = getErrorCode(0)
     return HttpResponseRedirect('redirect/'+error)
@@ -75,15 +78,14 @@ def signin(request):
             for signin_user in User.objects.filter(email = new_email):
                 if signin_user.password == pwd:
                     response = HttpResponseRedirect('success')
-                    set_cookie(response, 'csspool_username', new_email) 
+                    set_cookie(response, 'csspool_username', new_email)
+                    set_cookie(response, 'password', pwd) 
                     return response
             error = getErrorCode(2)
             return HttpResponseRedirect('redirect/'+error)
         except User.DoesNotExist:
-            user.save()
-        response = HttpResponseRedirect('showcss')
-        set_cookie(response, 'csspool_username', new_email)
-        return response
+            error = getErrorCode(2)
+            return HttpResponseRedirect('redirect/'+error)
     error = getErrorCode(2)
     return HttpResponseRedirect('redirect/'+error)
 def addcss(request):
@@ -130,6 +132,9 @@ def showcss(request, error_msg=None):
     template = loader.get_template('csspool/showcss.html')
     curtime = time.strftime("%x, %a")
     user_email = request.COOKIES.get('csspool_username')
+    if user_email is None or user_email == "":
+        error = getErrorCode(5)
+        return HttpResponseRedirect('redirect/'+error)
     for signin_user in User.objects.filter(email = user_email):
         cp = CssPool.objects.filter(user = signin_user)
         context = RequestContext(request, {
@@ -146,6 +151,7 @@ def showcss(request, error_msg=None):
 def logout(request):
     response = HttpResponseRedirect('/csspool')
     set_cookie(response, 'csspool_username', '', 0) 
+    set_cookie(response, 'password', '', 0) 
     return response
 
 def success(request):
@@ -176,15 +182,51 @@ def ajaxaccesscss(request, id):
         return HttpResponse(json.dumps(dic), content_type="application/json")
     except CssPool.DoesNotExist:
         return None
-def frame(request, bootstrap):
+def frame(request, bootstrap=0):
     if request.method == 'GET':
         code = request.GET['code']
         if int(bootstrap) == 1:
-            template = loader.get_template('csspool/iframe.html')
-            context = RequestContext(request, {
+            template = loader.get_template('csspool/iframe.html')            
+        elif int(bootstrap) == 0:
+            template = loader.get_template('csspool/iframewithoutbootstrap.html')
+        else:
+            return HttpResponse("Test Error")
+        context = RequestContext(request, {
                 'code': code,
             })
-            return HttpResponse(template.render(context))
-        elif int(bootstrap) == 0:
-            return HttpResponse(code)       
+        return HttpResponse(template.render(context))
     return HttpResponse("Test Error")
+
+def manage(request):
+    template = loader.get_template('csspool/manage.html')
+    curtime = time.strftime("%x, %a")
+    user_email = request.COOKIES.get('csspool_username')
+    for signin_user in User.objects.filter(email = user_email):
+        cp = CssPool.objects.filter(user = signin_user)
+        context = RequestContext(request, {
+            'current_date': curtime,
+            'cssPool': cp,
+            'email_address': user_email,
+        })
+        return HttpResponse(template.render(context))
+    error = getErrorCode(5)
+    return HttpResponseRedirect('redirect/'+error)
+def removeCss(request):
+    if request.method == 'POST':
+        user_email = request.COOKIES.get('csspool_username')
+        password = request.COOKIES.get('password')
+        cssid = request.POST['remove_id']
+        if user_email is None or user_email == "" or password is None or password == "":
+            error = getErrorCode(5)
+            return HttpResponseRedirect('redirect/'+error)
+        try:
+            cp = CssPool.objects.filter(pk = cssid)
+            if cp[0].user.email == user_email and cp[0].user.password == password:
+                cp.delete()
+                response = HttpResponseRedirect('success')
+        except CssPool.DoesNotExist:
+            error = getErrorCode(4)
+            return HttpResponseRedirect('redirect/'+error)   
+    error = getErrorCode(4)
+    return HttpResponseRedirect('redirect/'+error)
+    

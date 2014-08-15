@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Css Pool</title>
+    {% load staticfiles %}
+    <link href="{% static "dist/css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "csspool/css/showcss.css" %}" rel="stylesheet">
+</head>
+<body onload="checkValid()">  
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/csspool/showcss">{{email_address}}</a>
+        </div>
+        <div class="navbar-collapse collapse in">
+          <ul class="nav navbar-nav">
+                <li><a href="#profiles-null">Personal Profiles</a></li>
+                <li><a href="http://ywang135.co">Contact</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right" id="click-bar">
+            <li class="active"><a href="/csspool/manage" >Manage CSS</a></li>
+            <li><a href="/csspool/showcss">Show&amp;Add CSS</a></li>
+            <li><a href="/csspool/logout">Logout</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container"><br>
+            {{ current_date }}: &nbsp; 
+        <div id="chooseCss">
+            <h3> Choose and Remove Css</h3>
+            <div class="row">
+                <label class="col-md-2 control-label" for="choose_css_type">Css Name</label>
+                <div class="col-md-4">
+                    <select name="choose_css_type" id="choose_css_type" class="form-control">      
+                    {% for css in cssPool %}       
+                        <option value="{{css.pk}}">{{css}}</option> 
+                    {% endfor %}
+                </select>
+                </div>
+                <div class="col-md-3">
+                    <form id="removeForm" action="/csspool/remove" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="remove_id">
+                    </form>
+                    <input type="button" value="Remove" data-bb="prompt" class="btn btn-danger" onclick="removeCss();"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="error_msg" class="alert alert-danger" role="alert"></div>
+                </div>
+            </div>
+        </div>
+        <div id="showCss">
+            <div class="row">
+                <label class="col-md-2 control-label" for="test_area">Css Test</label>
+                <div id="test_area" class="col-md-10"></div>
+            </div>
+            <div class="row">
+                <label class="col-md-6 control-label" for="css_code">Css Code: </label>
+                <label class="col-md-6 control-label" for="chose_test">Test Code: </label>
+            </div>
+            <div class="row">
+                <div id="css_code" class="col-md-6"></div>
+                <div id="chose_testcode" class="col-md-6"></div>
+            </div>
+            <div class="row">
+                <label class="col-md-6 control-label" for="chose_css_name">Css Name: </label>
+                <label class="col-md-6 control-label" for="chose_css_type">Type: </label>
+            </div>
+            <div class="row">
+                <div id="chose_css_name" class="col-md-6"></div>
+                <div id="chose_css_type" class="col-md-6"></div>
+            </div>    
+            <div class="row">
+                <label class="col-md-6 control-label" for="chose_css_description">Description: </label>
+                <label class="col-md-6 control-label" for="chose_css_useBootstrap">Use Bootstrap? </label>
+            </div>
+            <div class="row">
+                <div id="chose_css_description" class="col-md-6"></div>
+                <div id="chose_css_useBootstrap" class="col-md-6"></div>
+            </div>   
+            <div class="row">
+                <div id="chose_css_code" class="col-md-6"></div>
+                <div id="chose_css_testcode" class="col-md-6"></div>
+            </div>  
+        </div>
+
+        <div class="mastfoot">
+            <div class="inner">
+              <p>GitHub of <a href="https://github.com/ywang135/CssPool">CssPool</a>, by <a href="https://ywang135.co">@Yi Wang</a>.</p>
+            </div>
+        </div>
+    </div><!-- /.container -->
+ 
+    <script src="{% static "csspool/js/jquery.js" %}"></script>
+    <script src="{% static "dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "dist/js/bootbox.min.js" %}"></script>
+    <script src="{% static "csspool/js/manage.js" %}"></script>
+    <script src="{% static "csspool/js/jquery.md5.js" %}"></script>
+</body>
+</html>

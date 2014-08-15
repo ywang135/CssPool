@@ -10,23 +10,28 @@ function getCookie(cname) {
     }
     return "";
 }
-function checkCookie() {
-    var user=getCookie("csspool_username");
-    if (user == "") {
-        window.location = "";
+function setCookie(cname,cvalue,exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires=" + d.toGMTString();
+    document.cookie = cname+"="+cvalue+"; "+expires;
+}
+function checkValid(){
+    if (!checkCookie("csspool_username"))
+        window.location = "/csspool";
+}
+function checkCookie(cname) {
+    var cvalue=getCookie(cname);
+    if (cvalue == "") {
+        return false;
     }
+    return true;
 }
 function validEmail(v) {
     var r = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
     return (v.match(r) == null) ? false : true;
 }
-function buttonClick(show, hide) {
-    $('#showCss').hide();
-    $("#error_msg").addClass("hide");
-    $('#'+show).removeClass("hide");
-    $('#'+hide).addClass("hide");
-    $('html, body').animate({ scrollTop: 0 }, 'slow');
-}
+
 function convertSourseCodeToHtml(codestrr) {
    // str = str.replace(/\b(the|over|and|into)\b/g, "_")
     codestrr = codestrr.replace(/(<)/g, "&lt;"); 
@@ -39,64 +44,6 @@ function convertSourseCodeToHtml(codestrr) {
 function setErrorMsg(errorMsg){
     $("#error_msg").fadeIn(); 
     $("#error_msg").html("<span class='glyphicon glyphicon-warning-sign'></span> "+errorMsg);    
-}
-function checkAndSubmit() { 
-    $("#error_msg").hide();
-    var email = getCookie("csspool_username");
-    if (!validEmail(email)){
-        $.cookie("csspool_username", null, { path: '/' });
-        bootbox.alert("Cookie invalid!");
-        window.location = "";
-    }    
-    $('input[name="addcss_email"]').val(email);
-    var pwd = $('input[name="addcss_password"]').val(); 
-    if (pwd.length<4){
-        setErrorMsg("Password is too short!");
-        return;   
-    }
-    var csscontent = $('textarea#css_content').val();
-    var cssContentStr = convertSourseCodeToHtml(csscontent);
-    var csstestcode = $('textarea#css_testcode').val();
-    var cssTestCodeStr = convertSourseCodeToHtml(csstestcode);
-    $('input[name="css_content"]').val(cssContentStr);  
-    $('input[name="addcss_testcode"]').val(cssTestCodeStr); 
-    //alert("submit form");
-    $("#addCssForm").submit();
-}
-function testCss(){
-    $("#error_msg").hide();
-    var csstype = $('#css_type').val(); 
-    var cssname = $('input[name="addcss_name"]').val().trim();
-    if (cssname == ""){
-        setErrorMsg("css name should not be empty.");
-        return;
-    }
-    var csscontent = $('textarea#css_content').val();
-    var cssStr = convertSourseCodeToHtml(csscontent);
-    if( !$('#useBootstrap').is(':checked') && csscontent.trim() == ""){
-        setErrorMsg("css content should not be empty or you can choose Bootstrap.");
-        return;
-    }
-    var testcontent = $('textarea#css_testcode').val(); 
-    if (testcontent.trim() == ""){
-        setErrorMsg("test code should not be empty.");
-        return;
-    }
-    var testCodeStr = convertSourseCodeToHtml(testcontent);
-    var description = $('input[name="addcss_description"]').val();
-    data = {}
-    data["name"] = cssname;
-    data["type"] = csstype;
-    data["description"] = description;
-    data["content"] = cssStr;
-    data["testCode"] = testCodeStr;
-    if($('#useBootstrap').is(':checked')){
-        data["useBootstrap"] = "Yes";
-    }
-    else{
-        data["useBootstrap"] = "No";   
-    }
-    showTest(data);
 }
 function showTest(data){
     $('#showCss').fadeIn();
@@ -117,7 +64,7 @@ function createTest(cssCode, testCode, useBootstrap){
     var mainCode = "<style>"+css+"</style>"+code;
     var suffixUrl = encodeURIComponent(mainCode);
     var bootstrap = useBootstrap?1:0
-    return "<iframe id=\"test_iframe\" class=\"col-md-10\" height=\"200px\" src=\"/csspool/frame/"+bootstrap+"?code="+suffixUrl+"\" scrolling=\"yes\"></iframe>"; 
+    return "<iframe id=\"test_iframe\" class=\"col-md-10\" src=\"/csspool/frame/"+bootstrap+"?code="+suffixUrl+"\"><noframes><body>"+mainCode+"</body></noframes></iframe>"; 
 }
 function convertHtmlToSourceCode(htmlcode){
     var codestrr = htmlcode.replace(/&nbsp;/g, " ");
@@ -151,7 +98,46 @@ function chooseCSS(){
         }
     }, false);
 }
+function submitRemoveAction(id){
+    $('input[name="remove_id"]').val(id);
+    $("#removeForm").submit();
+}
+function removeCss() {
+    var id = $("#choose_css_type").val();   
+    if (id == undefined){
+        return;   
+    }
+    $("#error_msg").fadeOut();
+    var html_code = '<h4>Your password timeout. Please type in your Password</h4><input type="password" class="form-control" placeholder="password input" size="20" name="password" id="password"/>';
+    bootbox.confirm(html_code,  function(result) {
+        var pwd = $('input[name="password"]').val();
+        if (result) {
+            if (pwd.length<4){
+                setErrorMsg("The password you typed in was too short!");
+            }
+            else {
+                setCookie(("password", password, 0.01));
+                email = getCookie("csspool_username");
+                cpwd = getCookie("password");
+                password = $.md5(email+pwd);
+                password = password.substr(1, password.length-2);
+                if (password == cpwd){
+                    bootbox.confirm("You want to delete this Css. Are your sure? ", function(confirm){
+                        if (confirm){
+                            submitRemoveAction(id);
+                        }
+                    });
+                }
+                else {
+                    setErrorMsg("re-check your password! ");
+                }
+            }
+        }
+    });        
+}
+
 $(document).ready(function() {
+    $("#error_msg").hide();
     $('#showCss').hide();
     $('ul.nav li').click(function(e) { 
         $('ul.nav li').each(function() {

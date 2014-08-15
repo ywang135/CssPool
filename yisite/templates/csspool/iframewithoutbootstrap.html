@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test Frame With Bootstrap</title>
+    <title>Test Frame Without Bootstrap</title>
     {% load staticfiles %}
-    <link href="{% static "dist/css/bootstrap.min.css" %}" rel="stylesheet">
 </head>
 <body>
     {{code | safe}}
     <script src="{% static "csspool/js/jquery.js" %}"></script>
-    <script src="{% static "dist/js/bootstrap.min.js" %}"></script>  
 <script>
     $(document).ready(function() {
         $("a").click(function(event){
